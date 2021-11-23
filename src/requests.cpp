@@ -65,7 +65,7 @@ void fill_vector(std::shared_ptr<node_t> const & node, std::vector<std::shared_p
 // invariant: all nodes 0 <= key < n_
 std::uint64_t adjacency_matrix_t::process_requests(std::shared_ptr<node_t> const & tree_root)
 {
-   net_t net(tree_root);
+   static_net_t net(tree_root);
 
    std::uint64_t result = 0;
 

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <cassert>
 
 int main(int argc, char *argv[])
 {
@@ -32,11 +33,11 @@ int main(int argc, char *argv[])
    }
 
    adjacency_matrix_t matrix = adjacency_matrix_t(n, m);// make_adjacency_matrix(requests, n);
-
    static_optimal_tree_t result = make_optimal_net(matrix);
-   std::cout << n << " " << result.cost << std::endl;
+   auto tree = make_uniform_three_net(n);
+   std::cout << n << "  " << result.cost << std::endl;
 
    freopen("a.tree", "w", stdout);
-   result.opt_root->print(line_tag_t{});
+   tree->print(line_tag_t{});
    return 0;
 }

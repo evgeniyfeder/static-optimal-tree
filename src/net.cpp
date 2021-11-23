@@ -22,14 +22,6 @@ net_t::net_t(std::shared_ptr<node_t> const & tree_root)
    fill_net_nodes(root_);
 }
 
-int net_t::process_request(int from, int to)
-{
-   if (net_nodes_.find(from) == net_nodes_.end() || net_nodes_.find(to) == net_nodes_.end())
-      throw std::runtime_error("Incorrect from or to");
-
-   return net_nodes_[from]->route(to);
-}
-
 net_node_t::net_node_t(node_t const & node)
       : key(node.key), min_key(key), max_key(key)
 {
@@ -62,3 +54,10 @@ int net_node_t::route(int to)
 }
 
 
+int static_net_t::process_request(int from, int to)
+{
+   if (net_nodes_.find(from) == net_nodes_.end() || net_nodes_.find(to) == net_nodes_.end())
+      throw std::runtime_error("Incorrect from or to");
+
+   return net_nodes_[from]->route(to);
+}

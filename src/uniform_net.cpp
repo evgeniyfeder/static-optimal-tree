@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <langinfo.h>
+#include <algorithm>
 
 
 std::size_t maxbit(std::size_t n)
@@ -13,6 +14,55 @@ std::size_t maxbit(std::size_t n)
       n = n >> 1;
    }
    return res;
+}
+
+std::pair<std::size_t, std::size_t> divide_2(std::size_t n)
+{
+   int h = maxbit(n) - 1;
+   std::size_t left = (1 << h) - 1, right = (1 << h) - 1;
+
+   if ((n & (1 << h)) == 0)
+      left = n - right - 1;
+   else
+   {
+      left += 1 << h;
+      right = n - left - 1;
+   }
+
+   assert(left + right + 1 == n);
+   return {left, right};
+}
+
+std::tuple<std::size_t, std::size_t, std::size_t> divide_3(std::size_t n)
+{
+   n = n + 2;
+   std::size_t mb = maxbit(n), i;
+
+   if ((n & (1 << (mb - 1))) != 0)
+   {
+      i = mb - 1;
+   }
+   else
+   {
+      i = mb - 2;
+   }
+
+   std::size_t start = (1 << i) - 1;
+   std::array<std::size_t, 3> sizes = {start, start, start};
+
+   std::size_t cn = n - 2 - 3 * start, ind = 0;
+
+   while (cn > 1 + (1 << i))
+   {
+      sizes[ind] += (1 << i);
+      cn -= (1 << i);
+      ind = (ind + 1) % 3;
+   }
+
+   sizes[2] = sizes[2] + cn - 1;
+   assert(sizes[0] + sizes[1] + sizes[2] + 1 == n - 2);
+   std::sort(sizes.begin(), sizes.end());
+   return {sizes[2], sizes[1], sizes[0]};
 }
 
 namespace square_impl
@@ -122,9 +172,10 @@ namespace half_impl
       if (l > r - 1)
          return nullptr;
 
-      std::size_t med = (l + r) / 2;
+      std::size_t n = r - l;
+      auto const & [left, right] = divide_2(n);
 
-      return std::make_shared<node_t>(med, make_down_tree(l, med), make_down_tree(med + 1, r));
+      return std::make_shared<node_t>(l + left, make_down_tree(l, l + left), make_down_tree(l + left + 1, r));
    }
 
    std::pair<std::shared_ptr<node_t>, std::shared_ptr<node_t>>
@@ -143,8 +194,9 @@ namespace half_impl
          return {subroot, root};
       }
 
-      auto const & [up_node, root] = make_up_tree(n / 2 - 1);
-      std::shared_ptr<node_t> left = make_down_tree(n / 2, n);
+      auto const & [up, down] = divide_2(n + 1);
+      auto const & [up_node, root] = make_up_tree(up - 1);
+      std::shared_ptr<node_t> left = make_down_tree(up, n);
 
       auto cur_node = std::make_shared<node_t>(n, left);
 
@@ -159,22 +211,21 @@ namespace half_impl
 // we take an edge and devide nodes into two sets
 std::shared_ptr<node_t> make_uniform_three_net(std::size_t n)
 {
-   //auto bottom = half_impl::make_down_tree(n / 2, n);
-   auto const & [up_node, root] = half_impl::make_up_tree(n / 3 - 1);
-   auto left = half_impl::make_down_tree(n / 3, 2 * n / 3);
-   auto right = half_impl::make_down_tree(2 * n / 3 + 1, n);
+   auto const & [up, left, right] = divide_3(n);
 
-   up_node->right = std::make_shared<node_t>(2 * n / 3, left, right);
+   auto const & [up_node, root] = half_impl::make_up_tree(up - 1);
+   auto bottom = half_impl::make_down_tree(up, n);
+
+   up_node->right = bottom;
    return root;
 }
 
 // make net that constructing by the following idea
 // we take an edge and devide nodes into two sets
-std::shared_ptr<node_t> make_uniform_half_net(std::size_t n)
+std::shared_ptr<node_t> make_uniform_full_tree(std::size_t n)
 {
    auto bottom = half_impl::make_down_tree(0, n);
-   //auto const & [up_node, root] = half_impl::make_up_tree(n / 2 - 1);
-   //up_node->right = bottom;
+
    return bottom;
 }
 

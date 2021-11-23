@@ -14,7 +14,7 @@ TEST(net, calc_route)
    //        5
    //          6
 
-   net_t net(tree);
+   static_net_t net(tree);
    ASSERT_EQ(net.process_request(3, 0), 2);
    ASSERT_EQ(net.process_request(6, 2), 3);
    ASSERT_EQ(net.process_request(1, 4), 3);

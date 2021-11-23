@@ -32,7 +32,6 @@ static_optimal_tree_t make_optimal_net(adjacency_matrix_t const & m)
       dp[i][i + 1] = init;
    }
    dp[n].resize(n + 1);
-
    for (std::size_t size = 2; size <= n; ++size)
    {
       for (std::size_t left = 0; left < n; ++left)

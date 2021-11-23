@@ -23,14 +23,21 @@ class net_t
 {
 public:
    net_t(std::shared_ptr<node_t> const & tree_root);
-   int process_request(int from, int to);
+   virtual int process_request(int from, int to) = 0;
 
 private:
    void fill_net_nodes(std::shared_ptr<net_node_t> const & cur_node);
 
-private:
+protected:
    std::unordered_map<int, std::shared_ptr<net_node_t>> net_nodes_;
    std::shared_ptr<net_node_t> root_;
+};
+
+class static_net_t : public net_t
+{
+public:
+   explicit static_net_t(std::shared_ptr<node_t> const & tree_root) : net_t(tree_root) {};
+   int process_request(int from, int to) override;
 };
 
 struct static_optimal_tree_t
@@ -47,5 +54,5 @@ struct static_optimal_tree_t
 
 static_optimal_tree_t make_optimal_net(adjacency_matrix_t const & m);
 std::shared_ptr<node_t> make_uniform_squared_net(std::size_t n);
-std::shared_ptr<node_t> make_uniform_half_net(std::size_t n);
+std::shared_ptr<node_t> make_uniform_full_tree(std::size_t n);
 std::shared_ptr<node_t> make_uniform_three_net(std::size_t n);
