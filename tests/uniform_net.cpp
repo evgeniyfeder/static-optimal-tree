@@ -42,7 +42,7 @@ TEST(uniform_tree_squared, eq_with_optimal_balanced)
 TEST(uniform_tree_half, build_10)
 {
    std::size_t n = 10;
-   auto tree = make_uniform_full_tree(n);
+   auto tree = make_full_tree(n);
    std::vector<int> line_tree = tree->to_line(), res = { 6, 3, 1, 0, 2, 5, 4, 8, 7, 9 };
    ASSERT_EQ(line_tree, res);
 }
@@ -66,6 +66,6 @@ TEST(uniform_tree, full_tree_count_number)
    {
       std::size_t n = (1 << i) - 1;
       auto matrix = adjacency_matrix_t(n, 1);
-      ASSERT_EQ(matrix.process_requests(make_uniform_full_tree(n)), count_num_full_tree(i));
+      ASSERT_EQ(matrix.process_requests(make_full_tree(n)), count_num_full_tree(i));
    }
 }

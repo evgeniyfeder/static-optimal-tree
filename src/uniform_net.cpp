@@ -33,7 +33,7 @@ std::pair<std::size_t, std::size_t> divide_2(std::size_t n)
    return {left, right};
 }
 
-std::tuple<std::size_t, std::size_t, std::size_t> divide_3(std::size_t n)
+std::array<std::size_t, 3> divide_3(std::size_t n)
 {
    n = n + 2;
    std::size_t mb = maxbit(n), i;
@@ -61,8 +61,7 @@ std::tuple<std::size_t, std::size_t, std::size_t> divide_3(std::size_t n)
 
    sizes[2] = sizes[2] + cn - 1;
    assert(sizes[0] + sizes[1] + sizes[2] + 1 == n - 2);
-   std::sort(sizes.begin(), sizes.end());
-   return {sizes[2], sizes[1], sizes[0]};
+   return sizes;
 }
 
 namespace square_impl
@@ -115,36 +114,9 @@ namespace square_impl
 //  tree_left  tree_right
 std::shared_ptr<node_t> make_uniform_squared_net(std::size_t n)
 {
-   std::shared_ptr<node_t> tree;
+   auto sizes = divide_3(n);
 
-   n = n + 2;
-
-   std::size_t mb = maxbit(n), i;
-
-
-   if ((n & (1 << (mb - 1))) != 0)
-   {
-      i = mb - 1;
-   }
-   else
-   {
-      i = mb - 2;
-   }
-
-   std::size_t start = (1 << i) - 1;
-   std::array<std::size_t, 3> sizes = {start, start, start};
-
-   std::size_t cn = n - 2 - 3 * start, ind = 0;
-
-   while (cn > 1 + (1 << i))
-   {
-      sizes[ind] += (1 << i);
-      cn -= (1 << i);
-      ind = (ind + 1) % 3;
-   }
-
-   std::size_t up_size = sizes[2] + cn - 1, left_size = sizes[1], right_size = sizes[0];
-
+   auto const & [up_size, left_size, right_size] = std::tuple{sizes[2], sizes[1], sizes[0]};
 
    // left and right need to be always full tree
    assert(left_size + 1 == 1 << maxbit(left_size + 1));
@@ -207,11 +179,14 @@ namespace half_impl
 }
 
 
-// make net that constructing by the following idea
-// we take an edge and devide nodes into two sets
+// make "full" tree that has 3 childs on center nodes and fill h + 1 layer consistently
 std::shared_ptr<node_t> make_uniform_three_net(std::size_t n)
 {
-   auto const & [up, left, right] = divide_3(n);
+   auto sizes = divide_3(n);
+
+   std::sort(sizes.begin(), sizes.end());
+
+   auto const & [up, left, right] = std::tuple{sizes[2], sizes[1], sizes[0]};
 
    auto const & [up_node, root] = half_impl::make_up_tree(up - 1);
    auto bottom = half_impl::make_down_tree(up, n);
@@ -220,9 +195,8 @@ std::shared_ptr<node_t> make_uniform_three_net(std::size_t n)
    return root;
 }
 
-// make net that constructing by the following idea
-// we take an edge and devide nodes into two sets
-std::shared_ptr<node_t> make_uniform_full_tree(std::size_t n)
+// make full tree and remainder nodes goes to depth h + 1 from left to right
+std::shared_ptr<node_t> make_full_tree(std::size_t n)
 {
    auto bottom = half_impl::make_down_tree(0, n);
 

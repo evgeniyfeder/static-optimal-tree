@@ -54,5 +54,5 @@ struct static_optimal_tree_t
 
 static_optimal_tree_t make_optimal_net(adjacency_matrix_t const & m);
 std::shared_ptr<node_t> make_uniform_squared_net(std::size_t n);
-std::shared_ptr<node_t> make_uniform_full_tree(std::size_t n);
+std::shared_ptr<node_t> make_full_tree(std::size_t n);
 std::shared_ptr<node_t> make_uniform_three_net(std::size_t n);
