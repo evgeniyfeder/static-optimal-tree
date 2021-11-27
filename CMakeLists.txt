@@ -5,7 +5,8 @@ add_library(nets STATIC
         src/static_optimal_net.cpp
         src/uniform_net.cpp
         src/requests.cpp
-        src/net.cpp)
+        src/net.cpp
+        src/san/period_optimal_net.cpp)
 
 target_include_directories(nets PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
@@ -13,6 +14,12 @@ add_executable(${PROJECT_NAME} main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} nets)
+
+
+add_executable(${PROJECT_NAME}-comparison src/tasks/comparison.cpp)
+
+target_include_directories(${PROJECT_NAME}-comparison PRIVATE include)
+target_link_libraries(${PROJECT_NAME}-comparison nets)
 
 enable_testing()
 find_package(GTest REQUIRED)
