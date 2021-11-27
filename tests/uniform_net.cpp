@@ -62,9 +62,9 @@ TEST(uniform_tree_three, eq_with_optimal_balanced)
 
 TEST(uniform_tree, full_tree_count_number)
 {
-   for (std::size_t i = 2; i < 100; i++)
+   for (std::size_t i = 4; i < 100; i++)
    {
-      std::size_t n = (1 << i) - 1;
+      std::size_t n = i;
       auto matrix = adjacency_matrix_t(n, 1);
       ASSERT_EQ(matrix.process_requests(make_full_tree(n)), count_num_full_tree(i));
    }
