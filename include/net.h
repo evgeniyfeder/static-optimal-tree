@@ -25,7 +25,7 @@ public:
    net_t(std::shared_ptr<node_t> const & tree_root);
    virtual int process_request(int from, int to) = 0;
 
-private:
+protected:
    void fill_net_nodes(std::shared_ptr<net_node_t> const & cur_node);
 
 protected:

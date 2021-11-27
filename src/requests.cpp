@@ -80,15 +80,16 @@ std::uint64_t adjacency_matrix_t::process_requests(std::shared_ptr<node_t> const
    return result;
 }
 
+void adjacency_matrix_t::add_request(int from, int to)
+{
+   m_[from][to]++;
+   m_[to][from]++;
+}
+
 std::size_t count_num_full_tree(std::size_t h)
 {
-   std::size_t res = 0;
-
-   for (std::size_t i = 0; i < h - 1; i++)
-   {
-      res += (1 << (h - 1 - i)) * ((1 << (i + 1)) - 1) * ((1 << (h)) - 1 - ((1 << (i + 1)) - 1));
-   }
-   return res;
+   // sum((2 ^(n - 1 - i)) * (2^(i + 1) - 1) * ((2^n) - 1 - (2^(i + 1) - 1)), i=0, i=n-2)
+   return (1 << h) * ((1 << h) * h + h - 3 * (1 << h) + 3);
 }
 
 

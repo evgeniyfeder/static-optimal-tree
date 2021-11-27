@@ -17,6 +17,11 @@ struct node_t
           std::shared_ptr<node_t> right = nullptr)
          : key(key), left(left), right(right) {}
 
+   node_t(node_t const &other) {
+      key = other.key;
+      left = other.left;
+      right = other.right;
+   }
    void print(std::size_t padding, tree_tag_t)
    {
       if (right)

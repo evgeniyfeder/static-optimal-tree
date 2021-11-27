@@ -20,6 +20,8 @@ public:
    std::size_t size() const noexcept;
    void print() const noexcept;
 
+   void add_request(int from, int to);
+
    std::uint64_t process_requests(std::shared_ptr<node_t> const & root);
 private:
    std::vector<std::vector<int>> m_;
@@ -27,3 +29,4 @@ private:
 };
 
 std::size_t count_num_full_tree(std::size_t h);
+std::size_t count_num_squared_uniform_tree(std::size_t n);
