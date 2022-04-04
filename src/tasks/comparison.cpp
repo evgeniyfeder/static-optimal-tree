@@ -3,8 +3,10 @@
 #include <net.h>
 #include <san/period_optimal_net.h>
 
+#include <algorithm>
 #include <random>
 #include <chrono>
+#include <fstream>
 
 
 std::vector<compare_result> compare_nets(std::size_t n, std::size_t m, std::size_t req_bar)
@@ -24,6 +26,29 @@ std::vector<compare_result> compare_nets(std::size_t n, std::size_t m, std::size
          requests.push_back({from, to});
          ++i;
       }
+   }
+
+   // dump requests as an input to splaynet execution for comparing results with splaynet
+   std::ofstream req_file("requests.in");
+
+   req_file << n << std::endl;
+
+   std::vector<int> nodes(n);
+   for (int i = 0; i < n; i++)
+      nodes[i] = i;
+
+   std::shuffle(nodes.begin(), nodes.end(), std::mt19937(std::random_device()()));
+
+   for (int i = 0; i < n; i++)
+      req_file << nodes[i] << " ";
+   req_file << std::endl;
+
+   req_file << 1 /* alpha */ << std::endl << m << std::endl;
+   for (std::size_t j = 0; j < m; j++)
+   {
+      int from = requests[j].first, to = requests[j].second;
+
+      req_file << from << " " << to << std::endl;
    }
 
    // networks to compare
@@ -66,9 +91,11 @@ int main(int argc, char *argv[])
    std::size_t n = 100, m = 100000, bar = 1000;
    auto result = compare_nets(n, m, bar);
 
-   std::cout << "step,optimal,uniform,period" << std::endl;
+   std::ofstream stat_f("stat.csv");
+
+   stat_f << "step,optimal,uniform,period" << std::endl;
    for (auto const & res : result)
    {
-      std::cout << res.step << "," << res.static_optimal << "," << res.uniform_optimal << "," << res.period_optimal << std::endl;
+      stat_f << res.step << "," << res.static_optimal << "," << res.uniform_optimal << "," << res.period_optimal << std::endl;
    }
 }
