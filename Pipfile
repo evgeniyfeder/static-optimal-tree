@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 drawtree = "*"
+pandas = "*"
+attrs = "*"
 
 [dev-packages]
 
