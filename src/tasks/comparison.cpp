@@ -7,27 +7,26 @@
 #include <random>
 #include <chrono>
 #include <fstream>
+#include <filesystem>
 
-
-std::vector<compare_result> compare_nets(std::size_t n, std::size_t m, std::size_t req_bar)
+std::pair<pair_list_t, std::size_t> load_requests(std::filesystem::path const & input_path)
 {
-   pair_list_t requests;
+   std::ifstream input_f(input_path);
 
-   std::size_t i = 0;
-   requests.reserve(m);
+   std::size_t n, m;
+   input_f >> n >> m;
 
-   std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-   std::uniform_int_distribution<int> dist(0, n - 1);
-   while (i < m)
+   pair_list_t result(m);
+   for (std::size_t i = 0; i < m; i++)
    {
-      std::size_t from = dist(rng) % n, to = dist(rng) % n;
-      if (from != to)
-      {
-         requests.push_back({from, to});
-         ++i;
-      }
+      input_f >> result[i].first >> result[i].second;
    }
+   return {result, n};
+}
 
+std::vector<compare_result> compare_nets(std::size_t n, pair_list_t const & requests, std::size_t req_bar)
+{;
+   std::size_t m = requests.size();
    // dump requests as an input to splaynet execution for comparing results with splaynet
    std::ofstream req_file("requests.in");
 
@@ -63,6 +62,7 @@ std::vector<compare_result> compare_nets(std::size_t n, std::size_t m, std::size
    std::vector<compare_result> result;
    for (std::size_t j = 1; j < m; j++)
    {
+      std::cout << j << std::endl;
       int from = requests[j].first, to = requests[j].second;
 
       cur_matrix.add_request(from, to);
@@ -89,10 +89,37 @@ std::vector<compare_result> compare_nets(std::size_t n, std::size_t m, std::size
 int main(int argc, char *argv[])
 {
    std::size_t n = 100, m = 100000, bar = 1000;
-   auto result = compare_nets(n, m, bar);
+   std::vector<compare_result> result;
 
-   std::ofstream stat_f("stat.csv");
 
+   if (argc == 1)
+   {
+      std::cout << "Generating uniform workload..." << std::endl;
+      pair_list_t requests;
+      std::size_t i = 0;
+      requests.reserve(m);
+
+      std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+      std::uniform_int_distribution<int> dist(0, n - 1);
+      while (i < m)
+      {
+         std::size_t from = dist(rng) % n, to = dist(rng) % n;
+         if (from != to)
+         {
+            requests.push_back({from, to});
+            ++i;
+         }
+      }
+      result = compare_nets(n, requests, bar);
+   }
+   else if (argc == 2)
+   {
+      auto const & [requests, n] = load_requests(argv[1]);
+      std::cout << "Using input from the file" << std::endl;
+      result = compare_nets(n, requests, bar);
+   }
+
+   std::ofstream stat_f("stat2.csv");
    stat_f << "step,optimal,uniform,period" << std::endl;
    for (auto const & res : result)
    {
