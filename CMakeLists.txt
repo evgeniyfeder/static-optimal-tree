@@ -6,7 +6,9 @@ add_library(nets STATIC
         src/uniform_net.cpp
         src/requests.cpp
         src/net.cpp
-        src/san/period_optimal_net.cpp)
+        src/san/period_optimal_net.cpp
+        src/san/central_splay_net.cpp
+        src/san/splay.cpp)
 
 target_include_directories(nets PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
