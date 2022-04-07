@@ -17,6 +17,17 @@ struct net_node_t
 
    explicit net_node_t(node_t const & node);
    int route(int to);
+
+   void to_line_rec(std::vector<int> & result)
+   {
+      result.push_back(key);
+
+      if (left)
+         left->to_line_rec(result);
+
+      if (right)
+         right->to_line_rec(result);
+   }
 };
 
 class net_t
@@ -25,8 +36,12 @@ public:
    net_t(std::shared_ptr<node_t> const & tree_root);
    virtual int process_request(int from, int to) = 0;
 
+   std::shared_ptr<net_node_t> root() const { return root_; }
+
 protected:
    void fill_net_nodes(std::shared_ptr<net_node_t> const & cur_node);
+
+
 
 protected:
    std::unordered_map<int, std::shared_ptr<net_node_t>> net_nodes_;

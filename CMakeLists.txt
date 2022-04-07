@@ -7,8 +7,8 @@ add_library(nets STATIC
         src/requests.cpp
         src/net.cpp
         src/san/period_optimal_net.cpp
-        src/san/central_splay_net.cpp
-        src/san/splay.cpp)
+        src/san/splay.cpp
+    )
 
 target_include_directories(nets PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
@@ -30,7 +30,8 @@ find_package(GTest REQUIRED)
 add_executable(${PROJECT_NAME}-tests
         tests/uniform_net.cpp
         tests/optimal_net.cpp
-        tests/net.cpp)
+        tests/net.cpp
+        tests/san/splay_net.cpp)
 
 target_include_directories(${PROJECT_NAME}-tests PRIVATE include)
 target_link_libraries(${PROJECT_NAME}-tests GTest::GTest GTest::Main nets)
