@@ -18,7 +18,7 @@ namespace splay
       std::shared_ptr<net_node_t> p_or_root(std::shared_ptr<net_node_t> const & v);
       std::shared_ptr<net_node_t> g_or_root(std::shared_ptr<net_node_t> const & root);
 
-      void splay_up(std::shared_ptr<net_node_t> & x);
+      void splay_up(std::shared_ptr<net_node_t> & x, int subroot_key);
    };
 }
 

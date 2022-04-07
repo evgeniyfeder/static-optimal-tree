@@ -53,6 +53,18 @@ int net_node_t::route(int to)
    throw std::runtime_error("BAD WAY: can't reach this place");
 }
 
+int net_node_t::subtree_root(int to)
+{
+   if (key == to)
+      return key;
+
+   if (to < min_key || to > max_key)
+      return parent->subtree_root(to);
+   if (to < key)
+      return key;
+   if (to > key)
+      return key;
+}
 
 int static_net_t::process_request(int from, int to)
 {

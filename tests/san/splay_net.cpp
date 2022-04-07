@@ -4,23 +4,28 @@
 
 #include <vector>
 
+void test(splay::splay_net_t & net, int from, int to, int len, std::vector<int> const & expected)
+{
+   ASSERT_EQ(len, net.process_request(from, to));
+
+   std::vector<int> net_line;
+   net.root()->to_line_rec(net_line);
+
+   ASSERT_EQ(net_line, expected);
+}
+
 TEST(splay_net, root_lca_requests)
 {
    splay::splay_net_t net(make_full_tree(7));
 
-   ASSERT_EQ(4, net.process_request(0, 4));
+   test(net, 0, 4, 4, {0, 4, 1, 3, 2, 5, 6});
+   test(net, 0, 6, 3, {0, 6, 5, 4, 1, 3, 2});
+}
 
-   std::vector<int> net_line, expected = {4, 1, 0, 3, 2, 5, 6};
-   net.root()->to_line_rec(net_line);
+TEST(splay_net, subroot_lca_requests)
+{
+   splay::splay_net_t net(make_full_tree(10));
 
-   ASSERT_EQ(net_line, expected);
-
-   ASSERT_EQ(4, net.process_request(3, 6));
-
-   net_line.clear();
-   expected = {6, 3, 1, 0, 2, 5, 4};
-   net.root()->to_line_rec(net_line);
-
-   ASSERT_EQ(net_line, expected);
-
+   test(net, 0, 4, 4, {6, 0, 4, 1, 3, 2, 5, 8, 7, 9});
+   test(net, 8, 9, 1, {6, 0, 4, 1, 3, 2, 5, 8, 7, 9});
 }

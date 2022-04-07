@@ -18,6 +18,8 @@ struct net_node_t
    explicit net_node_t(node_t const & node);
    int route(int to);
 
+   int subtree_root(int to);
+
    void to_line_rec(std::vector<int> & result)
    {
       result.push_back(key);

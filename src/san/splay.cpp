@@ -90,13 +90,19 @@ net_node_t * splay::g(const std::shared_ptr<net_node_t> & root)
    return nullptr;
 }
 
-void splay::splay_net_t::splay_up(std::shared_ptr<net_node_t> & v)
+void splay::splay_net_t::splay_up(std::shared_ptr<net_node_t> & v, int subroot_key)
 {
-   while (p(v))
+   bool is_subroot = v->key == subroot_key;
+
+   while (!is_subroot)
    {
+      if (p(v)->key == subroot_key || (g(v) && g(v)->key == subroot_key))
+         is_subroot = true;
+
       if (p(v)->left && p(v)->left->key == v->key)
       {
-         if (g(v) == nullptr)
+         // zig
+         if (g(v) == nullptr || p(v)->key == subroot_key)
          {
             right_rotate(p_or_root(v));
          }
@@ -115,7 +121,8 @@ void splay::splay_net_t::splay_up(std::shared_ptr<net_node_t> & v)
       }
       else
       {
-         if (g(v) == nullptr)
+         // zig
+         if (g(v) == nullptr || p(v)->key == subroot_key)
          {
             left_rotate(p_or_root(v));
          }
@@ -164,10 +171,16 @@ splay::splay_net_t::splay_net_t(const std::shared_ptr<node_t> & tree_root) : net
 
 int splay::splay_net_t::process_request(int from, int to)
 {
+   if (from == to)
+      return 0;
+
    int result = net_nodes_[from]->route(to);
 
-   splay_up(net_nodes_[from]);
-   splay_up(net_nodes_[to]);
+   splay_up(net_nodes_[from], net_nodes_[from]->subtree_root(to));
+   if (from < to)
+      splay_up(net_nodes_[to], net_nodes_[from]->right->key);
+   else
+      splay_up(net_nodes_[to], net_nodes_[from]->left->key);
 
    return result;
 }
