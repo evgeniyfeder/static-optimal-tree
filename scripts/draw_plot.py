@@ -9,8 +9,12 @@ def main():
     args = parser.parse_args()
 
     input_data = pandas.read_csv(args.input)
-    fig = px.scatter(input_data, x="step", y=["optimal","period","splaynet"])
+    fig = px.scatter(input_data, x="step", y=["optimal","period","splaynet","central_splaynet"])
+    fig.update_layout(xaxis_title="Number of operations",
+                      yaxis_title="Average routing cost",
+                      legend_title="Network algorithm")
     fig.show()
+    fig.write_image(args.output)
 
 if __name__ == '__main__':
     main()

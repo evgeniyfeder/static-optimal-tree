@@ -8,6 +8,7 @@ drawtree = "*"
 pandas = "*"
 attrs = "*"
 plotly = "*"
+kaleido = "*"
 
 [dev-packages]
 

@@ -13,7 +13,7 @@ int period_optimal_net_t::process_request(int from, int to)
 {
    int result = net_nodes_[from]->route(to);
 
-   if (counter >= m_.size())
+   if (counter >= m_.size() * m_.size())
    {
       auto new_network = make_optimal_net(m_);
 

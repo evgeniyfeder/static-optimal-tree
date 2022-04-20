@@ -22,6 +22,15 @@ net_t::net_t(std::shared_ptr<node_t> const & tree_root)
    fill_net_nodes(root_);
 }
 
+net_t::net_t(std::shared_ptr<net_node_t> const & tree_root)
+{
+   if (!tree_root)
+      return;
+
+   root_ = tree_root;
+   fill_net_nodes(root_);
+}
+
 net_node_t::net_node_t(node_t const & node)
       : key(node.key), min_key(key), max_key(key)
 {
