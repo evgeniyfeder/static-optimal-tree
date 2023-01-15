@@ -52,11 +52,14 @@ std::vector<compare_result> compare_nets(std::size_t n, pair_list_t const & requ
    }
 
    // networks to compare
-   static_net_t uniform_net{make_uniform_three_net(n)};
-   std::size_t cost_uniform_net = 0;
+//   static_net_t uniform_net{make_uniform_three_net(n)};
+//   std::size_t cost_uniform_net = 0;
+//
+//   period_optimal_net_t po_net{adjacency_matrix_t{n, 1}};
+//   std::size_t cost_po_net = 0;
 
-   period_optimal_net_t po_net{adjacency_matrix_t{n, 1}};
-   std::size_t cost_po_net = 0;
+   static_net_t full_binary_net{make_full_tree(n)};
+   std::size_t cost_full_binary = 0;
 
    splay::splay_net_t splay_net{make_full_tree(n)};
    std::size_t cost_splay_net = 0;
@@ -64,32 +67,36 @@ std::vector<compare_result> compare_nets(std::size_t n, pair_list_t const & requ
    splay::central_splay_net_t central_splay_net{make_uniform_three_net(n)};
    std::size_t cost_central_splay_net = 0;
 
-   adjacency_matrix_t cur_matrix(n, 0);
+   static_net_t opt_net{make_optimal_net(adjacency_matrix_t(requests, n)).opt_root};
+   std::size_t cost_final_optimal_net = 0;
+
+//   adjacency_matrix_t cur_matrix(n, 0);
 
    std::vector<compare_result> result;
    for (std::size_t j = 1; j < m; j++)
    {
       int from = requests[j].first, to = requests[j].second;
 
-      cur_matrix.add_request(from, to);
+//      cur_matrix.add_request(from, to);
 
-      cost_uniform_net += uniform_net.process_request(from, to);
-      cost_po_net += po_net.process_request(from, to);
+      //cost_uniform_net += uniform_net.process_request(from, to);
+      //cost_po_net += po_net.process_request(from, to);
       cost_splay_net += splay_net.process_request(from, to);
       cost_central_splay_net += central_splay_net.process_request(from, to);
+      cost_full_binary += full_binary_net.process_request(from, to);
+      cost_final_optimal_net += opt_net.process_request(from, to);
 
       if (j % req_bar == 0)
       {
-         auto opt_info = make_optimal_net(cur_matrix);
+         // auto opt_info = make_optimal_net(cur_matrix);
          std::cout << j << std::endl;
 
          compare_result cur = {0};
          cur.step = j;
-         cur.period_optimal = static_cast<double>(cost_po_net) / j;
-         cur.static_optimal = static_cast<double>(opt_info.cost) / j;
-         cur.uniform_optimal = static_cast<double>(cost_uniform_net) / j;
+         cur.static_optimal = static_cast<double>(cost_final_optimal_net) / j;
          cur.splay_net = static_cast<double>(cost_splay_net) / j;
          cur.central_splay_net = static_cast<double>(cost_central_splay_net) / j;
+         cur.full_binary_net = static_cast<double>(cost_full_binary) / j;
          result.emplace_back(cur);
       }
    }
@@ -130,11 +137,13 @@ int main(int argc, char *argv[])
    }
 
    std::ofstream stat_f(argv[argc - 1]);
-   stat_f << "step,optimal,uniform,period,splaynet,central_splaynet" << std::endl;
+   // stat_f << "step,optimal,uniform,period,splaynet,central_splaynet" << std::endl;
+   stat_f << "step,splaynet,central_splaynet,full_binary,static_optimal" << std::endl;
    for (auto const & res : result)
    {
-      stat_f << res.step << "," << res.static_optimal << ","
-             << res.uniform_optimal << "," << res.period_optimal << ","
-             << res.splay_net << "," << res.central_splay_net << std::endl;
+      stat_f << res.step << "," << res.splay_net
+                         << "," << res.central_splay_net
+                         << "," << res.full_binary_net
+                         << "," << res.static_optimal << std::endl;
    }
 }

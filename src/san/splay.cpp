@@ -339,4 +339,5 @@ int splay::central_splay_net_t::process_request(int from, int to)
          return parent.process_request(from, parent.root_->key) + 1 + right.process_request(right.root_->key, to);
    }
    static_assert("All cases");
+   throw std::runtime_error("bad_case");
 }
